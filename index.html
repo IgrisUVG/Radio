@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Radio</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="js/soundmanager2.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="wrapper">
+    <div id="infa">
+        <span id="track-title">Live</span>
+    </div>
+</div>
+<script>
+    var url = 'http://radio.yshivangoga.ru/mp3128';
+    var time = 0;
+    var timer = $('#Streaming');
+    var loading = $('#Loading');
+    var start = new Date;
+    var seconds = function () {
+        var diff = ((new Date).getTime() - start.getTime()) / 1000;
+        return diff + ' seconds.';
+    };
+    var timing = setInterval(function () {
+        timer.html(seconds());
+    }, 100);
+    soundManager.setup({
+        url: 'swf/',
+        flashVersion: 9 // optional: shiny features (default = 8)
+        // optional: ignore Flash where possible, use 100% HTML5 mode
+        // preferFlash: false,
+    });
+    soundManager.onready(function () {
+        var mySound = soundManager.createSound({
+            id: 'aSound',
+            url: url,
+            autoPlay: true,
+            volume: 10
+        });
+        mySound.play();
+    });
+    soundManager.ontimeout(function () {
+        // Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?
+    });
+    function radioTitle() {
+
+        // this is the URL of the json.xml file located on your server.
+        var url = 'http://radio.yshivangoga.ru/json.xsl';
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            async: true,
+            jsonpCallback: 'parseMusic',
+            contentType: "application/json",
+            dataType: 'jsonp',
+            success: function (json) {
+                // this is the element we're updating that will hold the track title
+                $('#track-title').text(json['/mp3128']['title']);
+                // this is the element we're updating that will hold the listeners count
+                $('#listeners').text(json['/mp3128']['listeners']);
+            },
+            error: function (e) {
+                console.log(e.message);
+            }
+        });
+
+    }
+
+    $(document).ready(function () {
+        setTimeout(function () {
+            radioTitle();
+        }, 1000);
+        setInterval(function () {
+            radioTitle();
+        }, 1000); // we're going to update our html elements / player every 15 seconds
+    });
+</script>
+</body>
+</html>

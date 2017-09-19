@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Spectrum Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="infa">
+        <span id="track-title">Live</span>
+    </div>
+    <audio id="audio-element"
+           src="http://radio.yshivangoga.ru/mp3128"
+           controls=""
+           style="width: 512px;">
+    </audio>
+    <div>
+        <canvas id="fft" width="512" height="200"></canvas>
+    </div>
+</div>
+<script>
+    /*
+    var stream = 'http://radio.yshivangoga.ru/mp3128';
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var analyser = audioCtx.createAnalyser();
+    source = audioCtx.createMediaStreamSource(stream);
+    source.connect(analyser);
+    analyser.connect(distortion);
+    distortion.connect(audioCtx.destination);
+    analyser.fftSize = 2048;
+    var bufferLength = analyser.frequencyBinCount;
+    var dataArray = new Uint8Array(bufferLength);
+    //    analyser.getByteTimeDomainData(dataArray);
+    canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+    function draw() {
+        drawVisual = requestAnimationFrame(draw);
+        analyser.getByteTimeDomainData(dataArray);
+        canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+        canvasCtx.lineWidth = 2;
+        canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+        canvasCtx.beginPath();
+        var sliceWidth = WIDTH * 1.0 / bufferLength;
+        var x = 0;
+        for (var i = 0; i < bufferLength; i++) {
+
+            var v = dataArray[i] / 128.0;
+            var y = v * HEIGHT / 2;
+
+            if (i === 0) {
+                canvasCtx.moveTo(x, y);
+            } else {
+                canvasCtx.lineTo(x, y);
+            }
+
+            x += sliceWidth;
+        }
+        canvasCtx.lineTo(canvas.width, canvas.height / 2);
+        canvasCtx.stroke();
+    }
+    draw();
+    */
+    //////////////////////////////////////////////////
+    function radioTitle() {
+
+        // this is the URL of the json.xml file located on your server.
+        var url = 'http://radio.yshivangoga.ru/json.xsl';
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            async: true,
+            jsonpCallback: 'parseMusic',
+            contentType: "application/json",
+            dataType: 'jsonp',
+            success: function (json) {
+                // this is the element we're updating that will hold the track title
+                $('#track-title').text(json['/mp3128']['title']);
+                // this is the element we're updating that will hold the listeners count
+                $('#listeners').text(json['/mp3128']['listeners']);
+            },
+            error: function (e) {
+                console.log(e.message);
+            }
+        });
+
+    }
+
+    $(document).ready(function () {
+        setTimeout(function () {
+            radioTitle();
+        }, 1000);
+        setInterval(function () {
+            radioTitle();
+        }, 1000); // we're going to update our html elements / player every 15 seconds
+    });
+</script>
+</body>
+</html>
