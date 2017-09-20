@@ -13,20 +13,24 @@
         <span id="track-title">Live</span>
     </div>
     <div id="chart" style="width: 800px; height: 250px"></div>
-    <!--<audio id="audio-element"-->
-    <!--src="http://radio.yshivangoga.ru/mp3128"-->
-    <!--controls=""-->
-    <!--style="width: 512px;">-->
-    <!--</audio>-->
+    <audio id="audio-element"
+           src="http://radio.yshivangoga.ru/mp3128"
+           controls=""
+           style="width: 512px;">
+    </audio>
     <!--<div>-->
     <!--<canvas id="fft" width="512" height="200"></canvas>-->
     <!--</div>-->
 </div>
 <script>
-    var AudioContext = window.AudioContext || window.webkitAudioContext,
-            ctx = new AudioContext(),
-            source = audioCtx.createMediaStreamSource(stream),//'http://radio.yshivangoga.ru/mp3128',
-            analyser = ctx.createAnalyser(),
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var ctx = new AudioContext();
+    var myAudio = document.querySelector('audio');
+    var pre = document.querySelector('pre');
+    var myScript = document.querySelector('script');
+    pre.innerHTML = myScript.innerHTML;
+    var source = ctx.createMediaElementSource(myAudio);//'http://radio.yshivangoga.ru/mp3128',
+    var analyser = ctx.createAnalyser(),
             processor = ctx.createScriptProcessor(2048, 1, 1),
             data,
             chart,
