@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="copyright" content="(c) By Protocoder, protocoder.ru, under Creative Commons BY-NC" />
+
+		<title>WEB Audio API</title>
+	</head>
+	<body>
+    	<script type="text/javascript">
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+			//можете изменить здесь название и путь до файла со звуком
+			var sample = "1_03.mp3";
+
+            //--- ДЕМО 1 -------------------------------------------------------------------
+            function play1( snd ) {
+            	var audioCtx = new AudioContext();
+
+            	var request = new XMLHttpRequest();
+            	request.open( "GET", snd, true );
+            	request.responseType = "arraybuffer";
+            	request.onload = function () {
+            		var audioData = request.response;
+
+            		audioCtx.decodeAudioData(
+            			audioData,
+            			function ( buffer ) {
+            				var smp = audioCtx.createBufferSource();
+            				smp.buffer = buffer;
+            				smp.connect( audioCtx.destination );
+            				smp.start( 0 );
+            			},
+            			function ( e ) {
+            				alert( "Error with decoding audio data" + e.err );
+            			}
+            		);
+            	};
+            	request.send();
+            }
+
+            //--- ДЕМО 2 -------------------------------------------------------------------
+            function play2( snd, vol ) {
+            	var audioCtx = new AudioContext();
+
+            	var request = new XMLHttpRequest();
+            	request.open( "GET", snd, true );
+            	request.responseType = "arraybuffer";
+            	request.onload = function () {
+            		var audioData = request.response;
+
+            		audioCtx.decodeAudioData(
+            			audioData,
+            			function ( buffer ) {
+            				var smp = audioCtx.createBufferSource();
+            				smp.buffer = buffer;
+            				//создание объекта GainNode и его привязка
+            				var gainNode = audioCtx.createGain ? audioCtx.createGain() : audioCtx.createGainNode();
+            				smp.connect( gainNode );
+            				gainNode.connect( audioCtx.destination );
+            				gainNode.gain.value = vol;
+            				smp.start( 0 );
+            			},
+            			function ( e ) {
+            				alert( "Error with decoding audio data" + e.err );
+            			}
+            		);
+            	};
+            	request.send();
+            }
+
+
+            //--- ДЕМО 3 -------------------------------------------------------------------
+            function play3( snd, balance ) {
+            	var audioCtx = new AudioContext();
+            	audioCtx.listener.setPosition( 0, 0, 0 );
+
+            	var request = new XMLHttpRequest();
+            	request.open( "GET", snd, true );
+            	request.responseType = "arraybuffer";
+            	request.onload = function () {
+            		var audioData = request.response;
+
+            		audioCtx.decodeAudioData(
+            			audioData,
+            			function ( buffer ) {
+            				var smp = audioCtx.createBufferSource();
+            				smp.buffer = buffer;
+            				//создание объекта Panner и его привязка
+            				var panner = audioCtx.createPanner();
+            				panner.setPosition( 0, 0, 1 );
+            				panner.panningModel = "equalpower";
+            				panner.setPosition( balance, 0, 1 - Math.abs( balance ) );
+            				smp.connect( panner );
+            				panner.connect( audioCtx.destination );
+            				smp.start( 0 );
+            			},
+            			function ( e ) {
+            				alert( "Error with decoding audio data" + e.err );
+            			}
+            		);
+            	};
+            	request.send();
+            }
+
+
+            //--- ДЕМО 4 -------------------------------------------------------------------
+            function play4( snd ) {
+            	var audioCtx = new AudioContext();
+            	audioCtx.listener.setPosition( 0, 0, 0 );
+
+            	var canvas = document.createElement( "canvas" );
+            	canvas.style.display = "block";
+            	var canvasW = 512;
+            	var canvasH = 64;
+            	var canvasHh = Math.floor( canvasH / 2 );
+            	canvas.width  = canvasW;
+            	canvas.height = canvasH;
+            	canvas.ctx    = canvas.getContext( "2d" );
+            	canvas.ctx.strokeStyle = "#000000";
+            	canvas.ctx.lineWidth = 2;
+            	canvas.ctx.fillStyle = "#FFFFFF";
+            	canvas.ctx.fillRect( 0, 0, canvasW, canvasH );
+            	document.body.appendChild( canvas );
+
+            	function vizualize( sample ) {
+            		canvas.ctx.fillRect( 0, 0, canvasW, canvasH );
+            		canvas.ctx.beginPath();
+
+            		canvas.ctx.moveTo( -1, canvasHh );
+            		for ( var x = 0; x < canvasW; x++ ) {
+            			var y = canvasHh - Math.floor( sample[x] * canvasHh );
+            			canvas.ctx.lineTo( x, y );
+            		}
+            		canvas.ctx.stroke();
+            	}
+
+            	var request = new XMLHttpRequest();
+            	request.open( "GET", snd, true );
+            	request.responseType = "arraybuffer";
+            	request.onload = function () {
+            		var audioData = request.response;
+
+            		audioCtx.decodeAudioData(
+            			audioData,
+            			function ( buffer ) {
+            				var smp = audioCtx.createBufferSource();
+            				smp.buffer = buffer;
+            				//создание объекта ScriptProcessor
+            				//аргументы: длина буфера, количество входящих каналов, количество исходящих каналов
+            				//чем больше буфер - тем меньшее число раз будет вызыван код обработки,
+            				//должен быть кратен степени двойки
+							var sp = audioCtx.createScriptProcessor ? audioCtx.createScriptProcessor( 512, 2, 2 ) : audioCtx.createJavaScriptNode( 512, 2, 2 );
+
+            				sp.onaudioprocess = function ( ape ) {
+            					var inputBuffer = ape.inputBuffer;
+            					var outputBuffer = ape.outputBuffer;
+
+            					var channel;
+            					var channelsLen = outputBuffer.numberOfChannels;
+            					var sample;
+            					var sampleLen = inputBuffer.length;
+
+            					//для визулизации создаем монобуфер
+            					var mono = new Array( sampleLen );
+            					for ( sample = 0; sample < sampleLen; sample++ ) mono[sample] = 0;
+
+            					for ( channel = 0; channel < channelsLen; channel++ ) {
+            						var inputData = inputBuffer.getChannelData( channel );
+            						var outputData = outputBuffer.getChannelData( channel );
+            						//устанавливаем выходные данные = входным
+            						//здесь можно изменить в них что-то или наложить эффект
+            						outputData.set( inputData );
+
+            						//микшируем в монобуфер все каналы
+            						for ( sample = 0; sample < sampleLen; sample++ ) mono[sample] = ( mono[sample] + inputData[sample] ) / 2;
+            					}
+
+            					vizualize( mono );
+            				};
+
+            				smp.connect( sp );
+            				sp.connect( audioCtx.destination );
+            				smp.start( 0 );
+            			},
+            			function ( e ) {
+            				alert( "Error with decoding audio data" + e.err );
+            			}
+            		);
+            	};
+            	request.send();
+            }
+    	</script>
+
+		<h1>WEB Audio</h1>
+		<h3>Для работы необходим звуковой файл с именем <i>sample.ogg</i>, однако Вы можете изенить его на любой другой (ogg, mp3 или wav)<br />поменяв переменную <i>sample</i> вверху скрипта. Размер файла лучше использовать менее 1Mb.</h3>
+    	<input type="button" value="играть" onclick="play1( sample );" />
+    	<input type="button" value="играть с громокстью 30%" onclick="play2( sample, 0.3 );" />
+    	<input type="button" value="играть слева" onclick="play3( sample, -1 );" />
+    	<input type="button" value="визулизация" onclick="play4( sample );" />
+	</body>
+</html>
