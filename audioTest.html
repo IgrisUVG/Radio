@@ -14,7 +14,7 @@
 </div>
 <script>
     var url = 'http://radio.yshivangoga.ru/mp3128';
-    /////////////////////////
+    /// Create <audio> element ///
     var audio = new Audio();
     //audio.src = '1_03.mp3';
     audio.src = url;
@@ -22,7 +22,7 @@
     audio.autoplay = true;
     audio.volume = 0.2;
     document.body.appendChild(audio);
-
+    ///  Create AudioContext   ///
     var context;
     function init() {
         try {
@@ -37,23 +37,17 @@
 
     var analyser = context.createAnalyser();
     window.addEventListener('load', init, function (e) {
-        // Our <audio> element will be the audio source.
+
         var source = context.createMediaElementSource(audio);
         source.connect(analyser);
         analyser.connect(context.destination);
-        // ...call requestAnimationFrame() and render the analyser's output to canvas.
-        /*
-         var request = new XMLHttpRequest();
-         request.open("GET", '1_03.mp3', true);
-         request.responseType = "arraybuffer";
 
-         request.onload = function () {
-         var source = context.createBufferSource();
-         source.buffer = context.createBuffer(request.response, false);
-         };
-         request.send();
-         */
-         //source.connect(context.destination);
+        console.log(analyser.fftSize); // 2048 by default
+        console.log(analyser.frequencyBinCount); // will give us 1024 data points
+
+        //analyser.fftSize = 64;
+        //console.log(analyser.frequencyBinCount); // fftSize/2 = 32 data points
+
     }, false);
 
 </script>

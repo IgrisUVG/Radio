@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ianreah.com</title>
+</head>
+<body>
+<script>
+
+    var context = new (window.AudioContext || window.webkitAudioContext)();
+
+    var request = new XMLHttpRequest();
+    request.open('GET', '1_03.mp3', true);
+    request.responseType = 'arraybuffer';
+
+    request.onload = function () {
+        source = context.createBufferSource();
+        source.buffer = context.createBuffer(request.response, false);
+    };
+
+    request.send();
+
+    source.connect(context.destination);
+
+</script>
+</body>
+</html>
