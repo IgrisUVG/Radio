@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Дослiди</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="js/radioTitle.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="infa">
+        <span id="track-title">Live</span>
+    </div>
+</div>
+<script>
+    var url = 'http://radio.yshivangoga.ru/mp3128';
+    /////////////////////////
+    var audio = new Audio();
+    //audio.src = '1_03.mp3';
+    audio.src = url;
+    audio.controls = true;
+    audio.autoplay = true;
+    audio.volume = 0.2;
+    document.body.appendChild(audio);
+
+    var context;
+    function init() {
+        try {
+            var AudioContext = window.AudioContext || window.webkitAudioContext;
+            context = new AudioContext();
+        }
+        catch (e) {
+            alert('Web Audio API is not supported in this browser');
+        }
+    }
+    /////////////////////////
+
+    var analyser = context.createAnalyser();
+    window.addEventListener('load', init, function (e) {
+        // Our <audio> element will be the audio source.
+        var source = context.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(context.destination);
+        // ...call requestAnimationFrame() and render the analyser's output to canvas.
+        /*
+         var request = new XMLHttpRequest();
+         request.open("GET", '1_03.mp3', true);
+         request.responseType = "arraybuffer";
+
+         request.onload = function () {
+         var source = context.createBufferSource();
+         source.buffer = context.createBuffer(request.response, false);
+         };
+         request.send();
+         */
+         //source.connect(context.destination);
+    }, false);
+
+</script>
+</body>
+</html>

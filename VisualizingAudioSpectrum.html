@@ -24,12 +24,13 @@
 </div>
 <script>
     var AudioContext = window.AudioContext || window.webkitAudioContext;
+    navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
     var ctx = new AudioContext();
     var myAudio = document.querySelector('audio');
     var pre = document.querySelector('pre');
     var myScript = document.querySelector('script');
     pre.innerHTML = myScript.innerHTML;
-    var source = ctx.createMediaElementSource(myAudio);//'http://radio.yshivangoga.ru/mp3128',
+    var source = ctx.createMediaStreamSource(myAudio);//'http://radio.yshivangoga.ru/mp3128',
     var analyser = ctx.createAnalyser(),
             processor = ctx.createScriptProcessor(2048, 1, 1),
             data,
