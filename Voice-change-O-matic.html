@@ -5,6 +5,8 @@
     <title>Voice-change-O-matic</title>
 </head>
 <body>
+<button class="mute">Mute</button>
+<canvas class="canvas"></canvas>
 <script>
 
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -40,6 +42,47 @@
         gainNode.gain.value = (CurY / HEIGHT) * maxVol;
 
         canvasDraw();
+    }
+
+    function random(number1, number2) {
+        var randomNo = number1 + (Math.floor(Math.random() * (number2 - number1)) + 1);
+        return randomNo;
+    }
+
+    var canvas = document.querySelector('.canvas');
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
+
+    var canvasCtx = canvas.getContext('2d');
+
+    function canvasDraw() {
+        rX = CurX;
+        rY = CurY;
+        rC = Math.floor((gainNode.gain.value / maxVol) * 30);
+
+        //canvasCtx.globalAlpha = 0.2;
+
+        for (i = 1; i <= 15; i = i + 2) {
+            canvasCtx.beginPath();
+            canvasCtx.fillStyle = 'rgb(' + 200 + (i * 10) + ',' + Math.floor((gainNode.gain.value / maxVol) * 255) + ',' + Math.floor((oscillator.frequency.value / maxFreq) * 255) + ')';
+            canvasCtx.arc(rX + random(0, 50), rY + random(0, 50), rC / 2 + i, (Math.PI / 180) * 10, (Math.PI / 180) * 360, false);
+            canvasCtx.fill();
+            canvasCtx.closePath();
+        }
+    }
+
+    var mute = document.querySelector('.mute');
+
+    mute.onclick = function () {
+        if (mute.id == "") {
+            gainNode.disconnect(audioCtx.destination);
+            mute.id = "activated";
+            mute.innerHTML = "Unmute";
+        } else {
+            gainNode.connect(audioCtx.destination);
+            mute.id = "";
+            mute.innerHTML = "Mute";
+        }
     }
 
 </script>
