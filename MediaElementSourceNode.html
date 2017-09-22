@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MediaElementSourceNode</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="js/radioTitle.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="infa">
+        <span id="track-title">Live</span>
+    </div>
+</div>
+<audio src="http://radio.yshivangoga.ru/mp3128"></audio>
+<script>
+    /*var url = 'http://radio.yshivangoga.ru/mp3128';
+     /// Create <audio> element ///
+     var audio = new Audio();
+     //audio.src = '1_03.mp3';
+     audio.src = url;
+     audio.controls = false;
+     audio.autoplay = true;
+     audio.volume = 0.1;
+     document.body.appendChild(audio);*/
+
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var myAudio = document.querySelector('audio');
+    //myAudio.volume = 0.5;
+    //myAudio.autoplay = true;
+    //myAudio.controls = true;
+
+    var pre = document.querySelector('pre');
+    var myScript = document.querySelector('script');
+
+    pre.innerHTML = myScript.innerHTML;
+
+    var source = audioCtx.createMediaElementSource(myAudio);
+    var gainNode = audioCtx.createGain();
+    source.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    var CurY;
+    var HEIGHT = window.innerHeight;
+
+    document.onmousemove = updatePage;
+
+    function updatePage(e) {
+        CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+        gainNode.gain.value = CurY / HEIGHT;
+    }
+
+</script>
+</body>
+</html>
