@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web-andryshka.ru</title>
+</head>
+<body>
+<audio src="http://radio.yshivangoga.ru/mp3128"></audio>
+<script>
+
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var source = ctx.createMediaElementSource(audio);
+    var gainNode = ctx.createGain();
+    gainNode.gain.value = 0.5;
+    source.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    source.start(0);
+
+</script>
+</body>
+</html>
