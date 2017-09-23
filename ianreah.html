@@ -9,13 +9,12 @@
 
     var context = new (window.AudioContext || window.webkitAudioContext)();
 
-    request = new XMLHttpRequest();
+    var request = new XMLHttpRequest();
     request.open('GET', '1_03.mp3', true);
     request.responseType = 'arraybuffer';
 
     request.onload = function () {
-        var
-        source = context.createBufferSource();
+        var source = context.createBufferSource();
         source.buffer = context.createBuffer(request.response, false);
     };
 

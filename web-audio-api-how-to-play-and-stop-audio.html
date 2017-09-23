@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web-audio-api-how-to-play-and-stop-audio</title>
+</head>
+<body>
+<button class="mute">Mute</button>
+<script>
+    window.onload = init;
+
+    function init() {
+
+        var context = new (window.AudioContext || window.webkitAudioContext)();
+        var analyser = context.createAnalyser();
+        var gainNode = context.createGain();
+        var source;
+        var audio0 = new Audio();
+        audio0.src = '1_03.mp3';
+        //audio0.src = 'http://radio.yshivangoga.ru/mp3128';
+        //audio0.controls = true;
+        audio0.autoplay = true;
+        audio0.loop = true;
+        //document.body.appendChild(audio);
+        source = context.createMediaElementSource(audio0);
+        source.connect(analyser);
+        analyser.connect(gainNode);
+        //gainNode.gain.value = 0.05;
+        gainNode.connect(context.destination);
+
+        var WIDTH = window.innerWidth;
+        var HEIGHT = window.innerHeight;
+
+        var maxVol = 1;
+        var initlVol = 0.05;
+
+        gainNode.gain.value = initlVol;
+
+        var CurX, CurY;
+
+        document.onmousemove = updadePage;
+
+        function updadePage(e) {
+            CurX = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+            CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+
+            gainNode.gain.value = (CurY / HEIGHT) * maxVol;
+        }
+
+        var mute = document.querySelector('.mute');
+
+        mute.onclick = function () {
+            if (mute.id == "") {
+                gainNode.disconnect(context.destination);
+                mute.id = "activated";
+                mute.innerHTML = "Unmute";
+            } else {
+                gainNode.connect(context.destination);
+                mute.id = "";
+                mute.innerHTML = "Mute";
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

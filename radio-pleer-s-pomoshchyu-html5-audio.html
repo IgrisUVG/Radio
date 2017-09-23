@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>radio-pleer-s-pomoshchyu-html5-audio</title>
+    <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+<!--http://radio.yshivangoga.ru/mp3128-->
+<!--<audio src="http://radio.yshivangoga.ru/mp3128" controls preload="metadata"></audio>-->
+<div>
+    <input type="button" id="play" value="Play"/>
+    <input type="button" id="pause" value="Pause"/>
+    <span id="duration"></span>
+</div>
+<div>
+    Громкость:
+    <input type="range" id="volume" min="0" max="10" value="5"/>
+</div>
+<script>
+    var audio = new Audio('http://radio.yshivangoga.ru/mp3128');
+    var play = document.getElementById('play');
+    play.addEventListener('click', function () {
+        audio.play();
+    }, false);
+    var pause = document.getElementById('pause');
+    pause.addEventListener('click', function () {
+        audio.pause();
+    }, false);
+    var volume = document.getElementById('volume');
+    volume.addEventListener('change', function () {
+        audio.volume = parseFloat(this.value / 10);
+    }, false);
+    audio.addEventListener('timeupdate', function () {
+        var duration = document.getElementById('duration');
+        var s = parseInt(audio.currentTime % 60);
+        var m = parseInt((audio.currentTime / 60) % 60);
+        duration.innerHTML = m + '.' + s + 'sec';
+    }, false);
+</script>
+</body>
+</html>
