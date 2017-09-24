@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AmplitudeJS for Live Stream HTML5 Audio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/amplitude.js"></script>
+</head>
+<body>
+<div id="player">
+    <div id="player-top">
+        <div id="amplitude-play-pause" class="amplitude-paused"></div>
+    </div>
+</div>
+<div id="single-song-container">
+    <audio id="single-song" src="http://radio.yshivangoga/mp3128/;" preload="none"></audio>
+</div>
+<script>
+    amplitude_config = {
+        'amplitude_live': true,
+        'amplitude_live_source': 'http://radio.yshivangoga/mp3128'
+    }
+</script>
+</body>
+</html>
