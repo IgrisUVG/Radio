@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang=ru>
+<head>
+    <meta charset=utf-8>
+    <title>Пример использования Web Audio API — сгенерированный код</title>
+    <style>
+        canvas {
+            /*border: 1px solid;*/
+        }
+    </style>
+</head>
+<body>
+<div>
+    <audio src="13_03.mp3" id="my.audio" controls loop crossorigin="anonymous"></audio>
+</div>
+<div>
+    <canvas id="my.canvas" width="500" height="100"></canvas>
+</div>
+<script>
+    // создаём аудио-контекст
+    var ctx = new (AudioContext || webkitAudioContext);
+
+    // создаём узел источника аудио
+    var audioNode = ctx.createMediaElementSource(document.getElementById('my.audio'));
+
+    // создаём узел анализатора
+    var analyserNode = ctx.createAnalyser();
+    audioNode.connect(analyserNode);
+    analyserNode.fftSize = 256;
+
+    // соединяем с выходом
+    analyserNode.connect(ctx.destination);
+
+    var canvas = document.getElementById('my.canvas');
+    var canvasContext = canvas.getContext('2d');
+    var analyserData = new Uint8Array(analyserNode.frequencyBinCount);
+
+    function visualize() {
+        function visualizeFrequencyBars() {
+            canvasContext.save();
+            var barWidth=canvas.width/analyserNode.frequencyBinCount*0.8;
+            analyserNode.getByteFrequencyData(analyserData);
+            for (var i=0;i<analyserNode.frequencyBinCount;i++) {
+                var x=i*canvas.width/analyserNode.frequencyBinCount;
+                canvasContext.fillStyle='rgb(50,50,'+(analyserData[i]+100)+')';
+                var barHeight=analyserData[i]*canvas.height/256;
+                var y=canvas.height-barHeight;
+                canvasContext.fillRect(x,y,barWidth,barHeight)
+            }
+            canvasContext.restore()
+        }
+        canvasContext.clearRect(0,0,canvas.width,canvas.height);
+        visualizeFrequencyBars();
+        requestAnimationFrame(visualize)
+    }
+    requestAnimationFrame(visualize)
+</script>
+</body>
+</html>
