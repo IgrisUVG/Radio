@@ -8,7 +8,6 @@
         #wrapper {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
             margin: 200px auto;
         }
 
@@ -26,7 +25,8 @@
 <body>
 <div id="wrapper">
     <div>
-        <audio src="13_03.mp3" id="myAudio" controls loop crossorigin="anonymous"></audio>
+        <!--<audio src="13_03.mp3" id="myAudio" controls crossorigin="anonymous"></audio>-->
+        <audio src="http://radio.yshivangoga.ru/mp3128/;" id="myAudio" controls crossorigin="anonymous"></audio>
     </div>
 </div>
 <div>
@@ -37,7 +37,9 @@
     var ctx = new (AudioContext || webkitAudioContext);
 
     // создаём узел источника аудио
-    var audioNode = ctx.createMediaElementSource(document.getElementById('myAudio'));
+    var audioElement = document.getElementsByTagName('audio')[0];
+    var audioNode = ctx.createMediaElementSource(audioElement);
+    // var audioNode = ctx.createMediaElementSource(document.getElementById('myAudio'));
 
     // создаём узел анализатора
     var analyserNode = ctx.createAnalyser();
